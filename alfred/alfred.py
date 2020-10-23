@@ -87,7 +87,9 @@ def arg_parse():
     vision_extract_parser.add_argument(
         '--video', '-v', help='video to extract')
     vision_extract_parser.add_argument(
-        '--jumps', '-j', help='jump frames for wide extract')
+        '--jumps', '-j', help='jump frames for wide extract DEFAULT: 6')
+    vision_extract_parser.add_argument(
+        '--format', '-f', help='save format for wide extract (jpg, png) DEFAULT: jpg')
 
     vision_reduce_parser = vision_sub_parser.add_parser('reduce', help='reduce video by drop frames'
                                                                        '\nalfred vision reduce -v a.mp4 -j 10')
@@ -349,9 +351,13 @@ def main(args=None):
                 if action == 'extract':
                     v_f = args_dict['video']
                     j = args_dict['jumps']
+                    f = args_dict['format'] or "jpg"
+                    f = f.lower()
+                    assert f in ['jpg', 'png']
                     print(Fore.BLUE + Style.BRIGHT +
                           'Extracting from {}'.format(v_f))
-                    video_extractor = VideoExtractor(jump_frames=j)
+                    video_extractor = VideoExtractor(
+                        jump_frames=j, save_format='frame_%06d.' + f)
                     video_extractor.extract(v_f)
                 elif action == 'reduce':
                     v_f = args_dict['video']

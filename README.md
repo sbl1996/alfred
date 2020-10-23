@@ -47,7 +47,7 @@ A glance of alfred, after you installed above package, you will have `alfred`:
   
   ```shell
   # extract video to images
-  alfred vision extract -v video.mp4
+  alfred vision extract -v video.mp4 -f png
   # combine images to video
   alfred vision 2video -d images/
   ```
