@@ -47,12 +47,14 @@ from alfred.utils.log import logger as logging
 import cv2
 from alfred.vis.image.det import visualize_det_cv2_part
 from alfred.vis.image.common import get_unique_color_by_id
-
+from pathlib import Path
 
 # USED_CATEGORIES_IDS = [i for i in range(1, 16)]
 
 
-def vis_coco(coco_img_root, ann_f):
+def vis_coco(coco_img_root, ann_f, save_dir=None):
+    if save_dir is not None:
+        Path(save_dir).mkdir(exist_ok=True, parents=True)
     data_dir = coco_img_root
     coco = COCO(ann_f)
 
@@ -75,7 +77,7 @@ def vis_coco(coco_img_root, ann_f):
         annos = coco.loadAnns(anno_ids)
 
         logging.info('showing anno: {}'.format(annos))
-        if len(annos[0]['segmentation']) == 0:
+        if 'segmentation' not in annos[0] or len(annos[0]['segmentation']) == 0:
             logging.info('no segmentation found, using opencv vis.')
             img = cv2.imread(img_f)
 
@@ -104,8 +106,15 @@ def vis_coco(coco_img_root, ann_f):
                               (0, 0, 0), -1)
                 cv2.putText(img, text_label, txt_bottom_left, font,
                             font_scale, (237, 237, 237), font_thickness, cv2.LINE_AA)
-            cv2.imshow('rr', img)
-            cv2.waitKey(0)
+            if save_dir:
+                img_f = Path(img_f)
+                img_f = img_f.relative_to(img_f.parent)
+                save_path = os.path.join(save_dir, str(img_f.stem + "_v" + img_f.suffix))
+                cv2.imwrite(save_path, img)
+                logging.info('result saved to %s' % save_path)
+            else:
+                cv2.imshow('rr', img)
+                cv2.waitKey(0)
         else:
             I = io.imread(img_f)
             plt.imshow(I)

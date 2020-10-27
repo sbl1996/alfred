@@ -215,6 +215,8 @@ def arg_parse():
         '--image_dir', '-i', help='Root path of COCO images.')
     view_coco_parser.add_argument(
         '--json', '-j', help='Root path of COCO annotations.json .')
+    view_coco_parser.add_argument(
+        '--save_dir', '-d', help="Save directory of visualized images.")
 
     voc_label_parser = data_sub_parser.add_parser(
         'voclabel', help='gather labels from annotations dir.')
@@ -444,7 +446,8 @@ def main(args=None):
                 elif action == 'cocoview':
                     img_d = args_dict['image_dir']
                     json_f = args_dict['json']
-                    vis_coco(img_d, json_f)
+                    save_dir = args_dict.get('save_dir')
+                    vis_coco(img_d, json_f, save_dir)
                 elif action == 'txtview':
                     image_dir = args_dict['image_dir']
                     label_dir = args_dict['label_dir']
